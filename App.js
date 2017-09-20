@@ -62,17 +62,20 @@ export default class App extends React.Component {
           </TouchableOpacity>
           <Button title="Strobe!" onPress={() => this.strobe()} />
           <View style={{width: '100%', margin: 20}}>
-            <Slider 
-              disabled={!this.state.strobeState}
-              minimumValue={100}
-              maximumValue={2000}
-              step={100}
-              value={2000 - this.state.strobeDelay}
-              onSlidingComplete={(delay) => {
-                  this.setState({strobeDelay: 2000 - delay}, () => this.strobe(true));
+            { this.state.strobeState &&
+              <Slider 
+                minimumTrackTintColor='white'
+                maximumTrackTintColor='rgba(255,255,255,0.5)'
+                minimumValue={100}
+                maximumValue={2000}
+                step={100}
+                value={(2000 - this.state.strobeDelay) + 100}
+                onSlidingComplete={(delay) => {
+                    this.setState({strobeDelay: (2000 - delay) + 100}, () => this.strobe(true));
+                  }
                 }
-              }
-            />
+              />
+            }
           </View>
         </View>
       )
