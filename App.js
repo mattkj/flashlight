@@ -1,21 +1,15 @@
 import React from 'react';
-import { Button, StyleSheet, Text, View } from 'react-native';
+import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Camera, Permissions } from 'expo';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 export default class App extends React.Component {
   constructor(){
     super();
     this.state = {
       hasCameraPermission: null,
-      type: Camera.Constants.Type.back,
-      flashMode: Camera.Constants.FlashMode.off
+      flashMode: Camera.Constants.FlashMode.torch
     };
-  }
-
-  swapCamera(type){
-    const Type = Camera.Constants.Type;
-    let newType = (type === Type.front) ? Type.back : Type.front;
-    this.setState({type: newType})
   }
 
   flashLight(flashMode){
@@ -26,27 +20,43 @@ export default class App extends React.Component {
 
   async componentWillMount() {
     const { status } = await Permissions.askAsync(Permissions.CAMERA);
-    this.setState({ hasCameraPermission: status === 'granted' });
+    this.setState({ 
+      hasCameraPermission: status === 'granted'
+    });
   }
   
   render() {
-    return (
-      <View style={{flex: 1}}>
-        <Camera style={styles.camera} type={this.state.type} flashMode={this.state.flashMode}>
-          <Button title="Swap" onPress={() => this.swapCamera(this.state.type)} />
-          <Button title="Flash" onPress={() => this.flashLight(this.state.flashMode)} />
-        </Camera>
-      </View>
-    );
+    const { hasCameraPermission } = this.state;
+    if (hasCameraPermission === null) {
+      return <View />;
+    } else if (hasCameraPermission === false) {
+      return (
+        <View style={styles.container}>
+          <Text style={{color: 'white'}}>Please allow access to camera</Text>
+        </View>
+      )
+    } else {
+      return (
+        <View style={styles.container}>
+          <Camera flashMode={this.state.flashMode} />
+          <TouchableOpacity activeOpacity={1} onPress={() => this.flashLight(this.state.flashMode)}>
+            <MaterialCommunityIcons 
+              name={(this.state.flashMode === Camera.Constants.FlashMode.off) ? 'flashlight-off' : 'flashlight'} 
+              size={100}
+              color={(this.state.flashMode === Camera.Constants.FlashMode.off) ? '#666666' : 'white'} 
+            />
+          </TouchableOpacity>
+        </View>
+      )
+    }
   }
 }
 
 const styles = StyleSheet.create({
-  camera: {
+  container: {
     flex: 1,
-    flexDirection: 'row',
-    backgroundColor: 'transparent',
-    alignItems: 'flex-end',
-    justifyContent: 'space-around',
+    backgroundColor: 'black',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
