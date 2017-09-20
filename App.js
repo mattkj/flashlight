@@ -26,24 +26,25 @@ export default class App extends React.Component {
   }
   
   render() {
-    const { hasCameraPermission } = this.state;
+    const { hasCameraPermission, flashMode } = this.state;
+
     if (hasCameraPermission === null) {
       return <View />;
     } else if (hasCameraPermission === false) {
       return (
         <View style={styles.container}>
-          <Text style={{color: 'white'}}>Please allow access to camera</Text>
+          <Text style={styles.text}>Please allow access to camera</Text>
         </View>
       )
     } else {
       return (
         <View style={styles.container}>
-          <Camera flashMode={this.state.flashMode} />
-          <TouchableOpacity activeOpacity={1} onPress={() => this.flashLight(this.state.flashMode)}>
+          <Camera flashMode={flashMode} />
+          <TouchableOpacity activeOpacity={1} onPress={() => this.flashLight(flashMode)}>
             <MaterialCommunityIcons 
-              name={(this.state.flashMode === Camera.Constants.FlashMode.off) ? 'flashlight-off' : 'flashlight'} 
+              name={(flashMode === Camera.Constants.FlashMode.off) ? 'flashlight-off' : 'flashlight'} 
               size={100}
-              color={(this.state.flashMode === Camera.Constants.FlashMode.off) ? '#666666' : 'white'} 
+              color={(flashMode === Camera.Constants.FlashMode.off) ? '#666666' : 'white'} 
             />
           </TouchableOpacity>
         </View>
@@ -59,4 +60,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  text: {
+    color: 'white'
+  }
 });
