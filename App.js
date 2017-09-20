@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Button, Slider, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Camera, Permissions } from 'expo';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
@@ -8,28 +8,25 @@ export default class App extends React.Component {
     super();
     this.state = {
       hasCameraPermission: null,
-      flashMode: Camera.Constants.FlashMode.torch,
-      strobeState: false
+      flashMode: Camera.Constants.FlashMode.off,
+      strobeState: false,
+      strobeDelay: 1000
     };
   }
 
-  flashLight(flashMode){
+  flashLight(){
     const FlashMode = Camera.Constants.FlashMode;
-    let newFlash = (flashMode === FlashMode.off) ? FlashMode.torch : FlashMode.off;
+    let newFlash = (this.state.flashMode === FlashMode.off) ? FlashMode.torch : FlashMode.off;
     this.setState({flashMode: newFlash})
   }
 
-  strobe(strobeState){
-    if (strobeState === true) {
+  strobe(slider = false){
+    if (!slider && this.state.strobeState === true) {
       clearInterval(this.strobeInterval);
       this.setState({strobeState: false});
     } else {
-      // this.strobeInterval = setInterval(this.flashLight(this.state.flashMode), 1000);
-      this.strobeInterval = setInterval(() => {
-        const FlashMode = Camera.Constants.FlashMode;
-        let newFlash = (this.state.flashMode === FlashMode.off) ? FlashMode.torch : FlashMode.off;
-        this.setState({flashMode: newFlash});
-      }, 1000);
+      clearInterval(this.strobeInterval);
+      this.strobeInterval = setInterval(() => this.flashLight(), this.state.strobeDelay);
       this.setState({strobeState: true});
     }
   }
@@ -56,14 +53,27 @@ export default class App extends React.Component {
       return (
         <View style={styles.container}>
           <Camera flashMode={flashMode} />
-          <TouchableOpacity activeOpacity={1} onPress={() => this.flashLight(flashMode)}>
+          <TouchableOpacity activeOpacity={1} onPress={() => this.flashLight()}>
             <MaterialCommunityIcons 
               name={(flashMode === Camera.Constants.FlashMode.off) ? 'flashlight-off' : 'flashlight'} 
               size={100}
               color={(flashMode === Camera.Constants.FlashMode.off) ? '#666666' : 'white'} 
             />
           </TouchableOpacity>
-          <Button title="Strobe!" onPress={() => this.strobe(this.state.strobeState)} />
+          <Button title="Strobe!" onPress={() => this.strobe()} />
+          <View style={{width: '100%', margin: 20}}>
+            <Slider 
+              disabled={!this.state.strobeState}
+              minimumValue={100}
+              maximumValue={2000}
+              step={100}
+              value={2000 - this.state.strobeDelay}
+              onSlidingComplete={(delay) => {
+                  this.setState({strobeDelay: 2000 - delay}, () => this.strobe(true));
+                }
+              }
+            />
+          </View>
         </View>
       )
     }
