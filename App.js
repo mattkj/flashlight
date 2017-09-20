@@ -61,7 +61,7 @@ export default class App extends React.Component {
             />
           </TouchableOpacity>
           <Button title="Strobe!" onPress={() => this.strobe()} />
-          <View style={{width: '100%', margin: 20}}>
+          <View style={{width: '100%', margin: 20, height: 50}}>
             { this.state.strobeState &&
               <Slider 
                 minimumTrackTintColor='white'
