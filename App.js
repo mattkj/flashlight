@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Camera, Permissions } from 'expo';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
@@ -8,7 +8,8 @@ export default class App extends React.Component {
     super();
     this.state = {
       hasCameraPermission: null,
-      flashMode: Camera.Constants.FlashMode.torch
+      flashMode: Camera.Constants.FlashMode.torch,
+      strobeState: false
     };
   }
 
@@ -16,6 +17,21 @@ export default class App extends React.Component {
     const FlashMode = Camera.Constants.FlashMode;
     let newFlash = (flashMode === FlashMode.off) ? FlashMode.torch : FlashMode.off;
     this.setState({flashMode: newFlash})
+  }
+
+  strobe(strobeState){
+    if (strobeState === true) {
+      clearInterval(this.strobeInterval);
+      this.setState({strobeState: false});
+    } else {
+      // this.strobeInterval = setInterval(this.flashLight(this.state.flashMode), 1000);
+      this.strobeInterval = setInterval(() => {
+        const FlashMode = Camera.Constants.FlashMode;
+        let newFlash = (this.state.flashMode === FlashMode.off) ? FlashMode.torch : FlashMode.off;
+        this.setState({flashMode: newFlash});
+      }, 1000);
+      this.setState({strobeState: true});
+    }
   }
 
   async componentWillMount() {
@@ -47,6 +63,7 @@ export default class App extends React.Component {
               color={(flashMode === Camera.Constants.FlashMode.off) ? '#666666' : 'white'} 
             />
           </TouchableOpacity>
+          <Button title="Strobe!" onPress={() => this.strobe(this.state.strobeState)} />
         </View>
       )
     }
