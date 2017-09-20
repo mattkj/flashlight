@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Camera, Permissions } from 'expo';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
