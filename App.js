@@ -62,7 +62,7 @@ export default class App extends React.Component {
           <Camera flashMode={flashMode} />
           <TouchableOpacity activeOpacity={1} onPress={this.toggleFlashLight}>
             <MaterialCommunityIcons 
-              name={(flashMode === Camera.Constants.FlashMode.off) ? 'flashlight-off' : 'flashlight'} 
+              name='flashlight'
               size={100}
               color={(flashMode === Camera.Constants.FlashMode.off) ? '#666666' : 'white'} 
             />
