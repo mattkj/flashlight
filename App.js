@@ -14,10 +14,17 @@ export default class App extends React.Component {
     };
   }
 
-  flashLight(){
+  toggleFlashLight = () => {
     const FlashMode = Camera.Constants.FlashMode;
     let newFlash = (this.state.flashMode === FlashMode.off) ? FlashMode.torch : FlashMode.off;
     this.setState({flashMode: newFlash})
+  }
+
+  adjustStrobe(delay){
+    this.setState({
+      strobeDelay: (2000 - delay) + 100
+    }, 
+    () => this.strobe(true))
   }
 
   strobe(slider = false){
@@ -26,7 +33,7 @@ export default class App extends React.Component {
       this.setState({strobeState: false});
     } else {
       clearInterval(this.strobeInterval);
-      this.strobeInterval = setInterval(() => this.flashLight(), this.state.strobeDelay);
+      this.strobeInterval = setInterval(this.toggleFlashLight, this.state.strobeDelay);
       this.setState({strobeState: true});
     }
   }
@@ -53,7 +60,7 @@ export default class App extends React.Component {
       return (
         <View style={styles.container}>
           <Camera flashMode={flashMode} />
-          <TouchableOpacity activeOpacity={1} onPress={() => this.flashLight()}>
+          <TouchableOpacity activeOpacity={1} onPress={this.toggleFlashLight}>
             <MaterialCommunityIcons 
               name={(flashMode === Camera.Constants.FlashMode.off) ? 'flashlight-off' : 'flashlight'} 
               size={100}
@@ -70,10 +77,7 @@ export default class App extends React.Component {
                 maximumValue={2000}
                 step={100}
                 value={(2000 - this.state.strobeDelay) + 100}
-                onSlidingComplete={(delay) => {
-                    this.setState({strobeDelay: (2000 - delay) + 100}, () => this.strobe(true));
-                  }
-                }
+                onSlidingComplete={delay => this.adjustStrobe(delay)}
               />
             }
           </View>
